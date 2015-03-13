@@ -1,0 +1,6 @@
+file.reference.mysql-ruby-coding-smarthost-log-to-db=../../mysql-ruby-coding/smarthost-log-to-db
+javac.classpath=
+main.file=miqhost_log_parser.rb
+ruby.includejava=false
+source.encoding=UTF-8
+src.dir=${file.reference.mysql-ruby-coding-smarthost-log-to-db}

@@ -1,0 +1,224 @@
+# 
+# this module is the main component of the ruby code to process EVM Server logs into a SQL DB 
+# for later analysis.  At the initial creation of this module the EVM Server log is being split into 
+# two separate logs, one for the Rails application and one for EVM Server application logging
+# This module is likely to evolve rapidly as fequtre requests for changes to the logs are entered into 
+# Fogbugz to make it easier to correlate information from the logs into real-world operation
+# experience.
+# April 2008 - Tom Hennessy
+# 
+=begin rdoc
+$Id:$
+
+=end
+def log_line_summarize(one_string)
+  # this routine expects a string to be passed in, not an array
+#  puts "#{one_string}"
+  # split line into standard boiier plate and payload
+  line_array = one_string.split("-- :")
+  # break up the boilerplate and extract the log severity type
+  severity = line_array[0].split[-1]
+
+  #examine the first word of the payload to see if it contains a job/taskid and
+  # if it does, lets remove it making the error type more general
+  _payload = line_array[1].split #split into separate words
+  if /(.*\[)/ =~ _payload[0] then
+    _payload[0] = $1 + "message specific id])"             # strip out variable portion
+    line_array[1] = _payload.join(" ")  # rebuild the payload     
+  end
+# prepend severity to payload  
+  key = severity + ":" + line_array[1]
+  if $Error_summary.has_key?(key) then
+    $Error_summary[key] += 1
+  else $Error_summary[key] = 1
+  end
+end
+def not_normal(of_interest)
+  of_interest.each do |x|
+    $Error_log.puts(x)
+  end
+  log_line_summarize(of_interest[0])
+end
+def fatal_messages(fatal_group)
+  fatal_group.each do|x|
+    $Fatal_log.puts(x)
+  end
+  log_line_summarize(fatal_group[0])
+end
+def process_single_line(single_line)
+  $processed_single_line_groups += 1
+  # if debug, increment counter
+  $debug_line_count += 1 if /DEBUG --/ =~ single_line[0]
+  # copy non-debug messages to output file
+  $modified_log.puts(single_line) if /DEBUG --/ !~ single_line[0]
+  #distill "messages of interest" into a separate file 
+  # for later investication
+  if /ERROR --|WARN --|\] started on / =~ single_line[0] then 
+    not_normal(single_line)
+        elsif /FATAL --/=~ single_line[0] then
+      fatal_messages(single_line)
+  end
+
+end
+def process_multiline_group(multi_line)
+  $processed_multi_line_groups += 1
+  if /DEBUG --/ =~ multi_line[0] then
+    $debug_line_count += multi_line.size
+    #increment count of debug and associated lines
+  end
+#  if /DEBUB --/ !~ multi_line[0] then
+#    multi_line.each do |x|
+#      _x = x.size
+#      puts "#{x}"
+#    end
+#  end
+# Lets see if the first line has a payload or not
+_payload = multi_line[0].split("-- :")
+if _payload[1].size < 3 || _payload[1] == nil then
+  #if there is no payload then it is in the next non-blank line
+  # so lets remove all blank lines
+#  if multi_line[1].size < 3 then
+    while multi_line[1].size < 3
+      multi_line.delete_at(1)
+    end
+#  end
+  multi_line[0] = multi_line[0].chomp + multi_line[1]
+  multi_line.delete_at(1)
+end
+  
+  if /^Processing/ =~ multi_line[1] then 
+    multi_line[0] = multi_line[0].chomp + multi_line[1]
+    multi_line.delete_at(1)
+  end
+  if /^ZiYa/ =~ multi_line[1] then
+    multi_line[0] = multi_line[0].chomp + multi_line[1]
+    multi_line.delete_at(1)
+  end
+  if /ActionController:/ =~ multi_line[1] && /FATAL --/ =~ multi_line[0] then
+    multi_line[0] = multi_line[0].chomp + multi_line[1]
+    multi_line.delete_at(1)
+  end
+  if /DEBUG --/ !~ multi_line[0] then
+    multi_line.each do |_x|
+      $modified_log.puts(_x)
+    end
+  end
+    if /ERROR --|WARN --/ =~ multi_line[0] then 
+      not_normal(multi_line)
+    elsif /FATAL --/=~ multi_line[0] then
+      fatal_messages(multi_line)
+    end 
+  end
+def process_line_group(line_group_in)
+  if line_group_in.size == 1 then process_single_line(line_group_in)
+  else process_multiline_group(line_group_in)
+  end
+  # empty the array since all processing should be completed
+   line_group_in = line_group_in.clear 
+end
+def process_input_line(input_line)
+#  if $gross_logfile_line_cnt = 0 then
+end
+$:.push("#{File.dirname(__FILE__)}")  # force the directory with initial code to be on the search path
+$:.push("C:\\dev\\miq\\tools\\qawatcher\\app\\models\\")  # location where all of the models are stored        
+parm_count = 0 # set default count of passed in paramaters
+$gross_logfile_line_cnt = 0
+$logfile_line_group_cnt = 0
+$processed_single_line_groups = 0
+$processed_multi_line_groups = 0
+$processing_lines = 0
+$debug_line_count = 0
+$modified_log = File.new("modified_production.log","w")
+$Error_log = File.new("Errors_production.log","w")
+$Fatal_log = File.new("Fatal_production.log","w")
+# summary information about Warning and Error messages in log
+$Error_summary = Hash.new
+$Error_summary_file = File.new("Error_Summary.txt","w")
+
+
+  # below is a compiled regular expression that is intended to contain the template
+  # format for defined log line message beginnings.  Any other string will be treated as
+  # a continuation of a previously started line and will be added into a line group for line
+  # group processing
+$MSG_ID = /^\[----\]/
+
+parm_count = ARGV.size     
+if parm_count == 0 || parm_count == nil then
+  puts "no input file found"
+  exit
+end
+puts "#{ARGV}"
+input_file = ARGV
+$_line_group = Array.new
+read_loop_start = Time.new
+#consider a loop here to process multiple input files
+ARGV.each do |arg_file_in|
+  puts "Processing EVM log file '#{arg_file_in}'"
+
+input_file = File.new(arg_file_in,"r")
+
+# process entire log file 
+while linein = input_file.gets
+  $gross_logfile_line_cnt += 1
+  if /Processing/ =~ linein then
+    $processing_lines += 1
+  end
+    
+    if $gross_logfile_line_cnt.modulo(10000) == 0 then
+# every 10k emit a progress line into the output file    
+    _x = Time.new - read_loop_start
+    puts " 10k lines processed in #{_x} seconds"
+    read_loop_start = Time.now
+  end  
+  #if the line is blank then skip it
+  next if linein.size < 2
+  if $_line_group.empty? || $_line_group.size == 0 then
+    # if the line group is empty and the input line begins with the "[---}" marker
+    # then begin a new linegroup, otherwise skip the line as "unknown"
+    case linein
+      when $MSG_ID  then $_line_group << linein
+                        $logfile_line_group_cnt += 1
+                        next
+#      else puts "line with value #{linein} \n encountered in unexpected context, skipping"
+#          next
+     end
+    end
+    if $_line_group.size > 0 && $MSG_ID =~ linein then 
+      # if this is a good log line but I already have started a line group
+      # then process that line group, allow the group to be emptied
+      # and restart a new line group
+      process_line_group($_line_group) 
+      $_line_group << linein if linein.size > 1
+      # if line length = 1 then only the line feed is here and we should ignore blank lines
+      $logfile_line_group_cnt += 1
+    elsif  $_line_group.empty? || $_line_group.size == 0 then 
+      puts "unexpected line context for '#{linein}'"
+      next
+    else      
+      # this is a non-log line that should be appended into the log group being accumulated
+      $_line_group << linein if linein.size > 1
+      # if line length = 1 then only the line feed is here and we should ignore blank lines      
+    end
+  end
+ puts "total number of lines in #{arg_file_in} is #{$gross_logfile_line_cnt}" 
+ puts "total number of lines within groups is #{$logfile_line_group_cnt}"
+ puts " processed multi-line groups count is #{$processed_multi_line_groups}"
+ puts " processed single-line groups count is #{$processed_single_line_groups}"
+ puts " Count of debug and associated lines is #{$debug_line_count}"
+# $Error_summary_file <<$Error_summary
+$Error_summary_file.puts("Log Error Summary:")
+  $Error_summary_file.puts("\n Sorted in descending instance count order for #{arg_file_in}\n Count \t severity-message text")
+
+# from a readability perspective I will generate a summary dataset with the most frequent error printed first
+# and the least frequent last.  Error, Fatal and Warning messages will be intermixed.  INFO messages are omitted.
+
+  sorted_hash = $Error_summary.sort {|a,b| a[1] <=> b[1]}
+  for i in 1..sorted_hash.size
+    next if /^INFO:/ =~ sorted_hash[sorted_hash.size - i][0]
+    $Error_summary_file.puts "   #{sorted_hash[sorted_hash.size - i][1]}\t    #{sorted_hash[sorted_hash.size - i][0]}"
+  end
+  
+
+
+end
+#exit

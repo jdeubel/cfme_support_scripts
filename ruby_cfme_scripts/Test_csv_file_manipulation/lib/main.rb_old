@@ -1,0 +1,39 @@
+require "csv"
+require "rubygems"
+require "fileutils"
+reader = CSV.open("filtered_combined_evm_msg_info.csv","r")
+writer = File.new("sorted_evm_msg_info.csv","w")
+header = reader.shift
+puts "#{header.inspect}"
+  writer.puts "00000000000000000000," + header.join(",")
+#exit
+xcount = 0
+reader.each { |row|
+              xcount += 1
+              _temp_string = ""
+              element_count = 0
+              row.size.times { |element_|
+                          element = row[element_count].to_s
+                        if element.class.to_s != "NilClass" && element.index(",") then
+                          element = '"' + element + '"'
+                        end
+                        if element.class.to_s == "NilClass" then
+                          element = ""
+                        end
+              _temp_string = _temp_string <<  element + ","
+              element_count += 1
+              }
+              msgid_ = "000000000000000000" + row[2]
+              msgid_ = msgid_[-18,18]
+#              puts "#{msgid_}"
+              _outstring = msgid_ + "," + _temp_string
+#              puts _outstring
+              writer.puts _outstring
+            }
+            puts "#{xcount} records processed"
+            writer.close
+            sort_em = "cmd.exe /C sort //+1 sorted_evm_msg_info.csv"
+            puts sort_em
+            sortem_results = `sort_em`
+            puts sortem_results
+exit

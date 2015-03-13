@@ -1,0 +1,10 @@
+# 
+# To change this template, choose Tools | Templates
+# and open the template in the editor.
+ 
+
+=begin rdoc
+Copyright 2008 ManageIQ, Inc
+$Id$
+=end
+puts "Hello World"

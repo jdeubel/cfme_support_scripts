@@ -1,0 +1,12 @@
+=begin rdoc
+Copyright 2008 ManageIQ, Inc
+$Id$
+=end
+def fatal_messages(fatal_group)
+  $Fatal_log.puts("****\n")
+  fatal_group.each do|x|
+    $Fatal_log.puts(x)
+  end
+  $Fatal_log.puts("****\n\n")
+  log_line_summarize(fatal_group[0])
+end
