@@ -179,9 +179,9 @@ postgresql_activity_stats = 0
 table_statistics_data_count = 0
 table_size_data_count = 0
 
-print "CFME Server Name,log date time,scans started,scans ended,max active scans,active at end of hour" > "cfme_Vm_Scan_Activity.csv"
-print "CFME Server Name,log date time,msg put or get,alert type"     > "cfme_Alert_Info.csv"
-print "CFME Server Name,log date time,table type,msg state,zone,zone count,role name,count" > "cfme_Queue_counts_by_state_and_role.csv"
+print "Evm Server Name,log date time,scans started,scans ended,max active scans,active at end of hour" > "cfme_Vm_Scan_Activity.csv"
+print "EVM Server Name,log date time,msg put or get,alert type"     > "cfme_Alert_Info.csv"
+print "EVM Server Name,log date time,table type,msg state,zone,zone count,role name,count" > "cfme_Queue_counts_by_state_and_role.csv"
 print ""  >  "cfme_evaluate_alerts.txt"            #clear any existing file
 print "" >   "cfme_EVM_alerts_raised.txt"          #clear any existing file
 print "" >   "cfme_EVM_event_raised.txt"           #clear any existing file
@@ -192,25 +192,25 @@ print "" > "Queued_email.txt"                    #clear any existing file
 print "" > "Creating_provision_instances_for_request.txt"  # clear any existing file
 print "" > "provision_detail_tracking.cmd"       # clear any existing file
 print "" > "chase_provision_requests.cmd"        # clear any existing file
-print "CFME Server Name,date time,total time,worker dequeue, worker messaging, worker monitor,server dequeue,heartbeat,log active servers" > "cfme_Server_Monitor_loop.csv"
-print "CFME server name,datehour,errors,warnings,info,debug,server starts,worker monitor starts,worker starts,workers killed,has not responded count,garbage collections,garbage collection max seconds,broker not available or drb uri error,vim failed to create new connection count,ems refresh completed,full VC refresh started,full VC refresh completed,max VC refresh duration,max all target refresh duration,VC id,db errors,refresh timeouts,vmid of last VC refresh started,C&U VM collection count,VM C&U Wait > 600 seconds,VM C&U misses,C&U host collection count, C&U host wait > 600 seconds,Host C&U misses,C&U storage collection count,C&U storage wait > 600 seconds,events caught,events queued,performance purges ended, performance instances deleted,evm events count,evm alerts count,alert msgs created,alert msgs processed"
-print "CFME server name,Hour,Duration,Count" > "cfme Hourly VM Perf_capture Counts by Duration.csv"
-print "CFME server name,Hour,Duration,Count" > "cfme Hourly Host Perf_capture Counts by Duration.csv"
-print "CFME server name,Hour,Duration,Count" > "cfme Hourly Storage Perf_capture Counts by Duration.csv"
-print "CFME server name,worker process,start time,end time,purged records count" > "cfme Purged  Performances.csv"
-print "CFME server name,log date time,dequeue wait time" > "cfme_vm_perf_capture_dequeue_times.csv"
-print "CFME server name,log date time,element class,element name,expected time,actual time,missed duration (seconds)" >"cfme_C&U_Collection_misses.csv"
-print "CFME server name,log date time,class type,method name,row count" > "cfme_Performance_Rows_Captured.csv"
+print "EVM Server Name,date time,total time,worker dequeue, worker messaging, worker monitor,server dequeue,heartbeat,log active servers" > "cfme_Server_Monitor_loop.csv"
+print "EVM server name,datehour,errors,warnings,info,debug,server starts,worker monitor starts,worker starts,workers killed,has not responded count,garbage collections,garbage collection max seconds,broker not available or drb uri error,vim failed to create new connection count,ems refresh completed,full VC refresh started,full VC refresh completed,max VC refresh duration,max all target refresh duration,VC id,db errors,refresh timeouts,vmid of last VC refresh started,C&U VM collection count,VM C&U Wait > 600 seconds,VM C&U misses,C&U host collection count, C&U host wait > 600 seconds,Host C&U misses,C&U storage collection count,C&U storage wait > 600 seconds,events caught,events queued,performance purges ended, performance instances deleted,evm events count,evm alerts count,alert msgs created,alert msgs processed"
+print "EVM server name,Hour,Duration,Count" > "cfme Hourly VM Perf_capture Counts by Duration.csv"
+print "EVM server name,Hour,Duration,Count" > "cfme Hourly Host Perf_capture Counts by Duration.csv"
+print "EVM server name,Hour,Duration,Count" > "cfme Hourly Storage Perf_capture Counts by Duration.csv"
+print "EVM server name,worker process,start time,end time,purged records count" > "cfme Purged  Performances.csv"
+print "EVM server name,log date time,dequeue wait time" > "cfme_vm_perf_capture_dequeue_times.csv"
+print "EVM server name,log date time,element class,element name,expected time,actual time,missed duration (seconds)" >"cfme_C&U_Collection_misses.csv"
+print "EVM server name,log date time,class type,method name,row count" > "cfme_Performance_Rows_Captured.csv"
 print "" > "cfme_EVM_Roles_actions.txt"
 print "" > "MiqServer_log_status.txt"
 print "" > "MiqWorker_log_status.txt"
 print "" > "q_task_keeper_lines"
 #print "" > "Filesystems_usage_info.csv"
-#print "CFME Server Name,log date time,Pid:Tid,local,master,status,appliance id,pid,guid,appliance name,zone,hostname,build,version,ipaddress,roles count,alert processor,automate,db ops,db owner,db sync,database synchronization,event,performance collector,performance coordinator,performance processor,reporting,scheduler,smart proxy,smart state,smart state drift,smi refresh,user interface,vcenter,vc refresh,web services,kvm,ems operations,user interface,web services,database operations,database owner,ems inventory,ems metrics coordinator,ems metrics processor,ems metrics collector,ldap synchronization,notifier,storage inventory,storage metrics collector,storage metrics coordinator,storage metrics processor,vmdb storage bridge,vdi inventory,unknown" > "cfme_EVM_appliance_active_roles.csv"
- print "CFME Server Name,log date time,Pid:Tid,local,master,status,appliance id,pid,guid,appliance name,zone,hostname,build,version,ipaddress,roles count,alert processor,automate,db ops,db owner,db sync,database synchronization,event,performance collector,performance coordinator,performance processor,reporting,scheduler,smart proxy,smart state,smart state drift,smi refresh,user interface,vcenter,vc refresh,kvm,ems operations,user interface,web services,database operations,database owner,ems inventory,ems metrics coordinator,ems metrics processor,ems metrics collector,ldap synchronization,notifier,storage inventory,storage metrics collector,storage metrics coordinator,storage metrics processor,vmdb storage bridge,vdi inventory,RHN mirror,unknown" > "cfme_EVM_appliance_active_roles.csv"
+#print "EVM Server Name,log date time,Pid:Tid,local,master,status,appliance id,pid,guid,appliance name,zone,hostname,build,version,ipaddress,roles count,alert processor,automate,db ops,db owner,db sync,database synchronization,event,performance collector,performance coordinator,performance processor,reporting,scheduler,smart proxy,smart state,smart state drift,smi refresh,user interface,vcenter,vc refresh,web services,kvm,ems operations,user interface,web services,database operations,database owner,ems inventory,ems metrics coordinator,ems metrics processor,ems metrics collector,ldap synchronization,notifier,storage inventory,storage metrics collector,storage metrics coordinator,storage metrics processor,vmdb storage bridge,vdi inventory,unknown" > "cfme_EVM_appliance_active_roles.csv"
+ print "EVM Server Name,log date time,Pid:Tid,local,master,status,appliance id,pid,guid,appliance name,zone,hostname,build,version,ipaddress,roles count,alert processor,automate,db ops,db owner,db sync,database synchronization,event,performance collector,performance coordinator,performance processor,reporting,scheduler,smart proxy,smart state,smart state drift,smi refresh,user interface,vcenter,vc refresh,kvm,ems operations,user interface,web services,database operations,database owner,ems inventory,ems metrics coordinator,ems metrics processor,ems metrics collector,ldap synchronization,notifier,storage inventory,storage metrics collector,storage metrics coordinator,storage metrics processor,vmdb storage bridge,vdi inventory,RHN mirror,unknown" > "cfme_EVM_appliance_active_roles.csv"
 print "" > "cfme_Schedule_actions.txt"
 print "miq license info text file" > "cfme_miqlicense.txt"
-print "CFME server name,refresh end date time,Pid:Tid,vc name,vc id, total time,parse vc data,get vc data,db save inventory,get vc data ems customization spec,post refresh ems,filter vc data,get vc data total,get vc data host scsi" > "cfme VC Refresh Timings.csv"
+print "EVM server name,refresh end date time,Pid:Tid,vc name,vc id, total time,parse vc data,get vc data,db save inventory,get vc data ems customization spec,post refresh ems,filter vc data,get vc data total,get vc data host scsi" > "cfme VC Refresh Timings.csv"
 
 vc_refresh_total_time = 0
 vc_refresh_parse_vc_data = 0
