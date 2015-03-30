@@ -1,7 +1,0 @@
-=begin rdoc
-Copyright 2008 ManageIQ, Inc
-$Id$
-=end
-def process_input_line(input_line)
-#  if $gross_logfile_line_cnt = 0 then
-end
