@@ -1,5 +1,4 @@
 # Delete any records older than this:
-ARCHIVE_CUTOFF = Time.now.utc - 1.month
 ORPHANED_CUTTOFF = Time.now.utc - 1.month
 # If true, do not delete anything; only report:
 REPORT_ONLY = true
@@ -10,9 +9,8 @@ $log.level = Logger::INFO
 
 query = Vm.where("updated_on < ? or updated_on IS NULL", ORPHANED_CUTTOFF)
 orphaned = 0
-#archived = 0
 
-$log.info "Searching for orphaned VMs older than #{ORPHANED_CUTTOFF} UTC."
+$log.info "Searching for Orphaned VMs older than #{ORPHANED_CUTTOFF} UTC."
 $log.info "Expecting to prune #{query.all_orphaned.count} of the #{query.count} older vms"
 if REPORT_ONLY
   $log.info "Reporting only; no rows will be deleted."
@@ -25,7 +23,7 @@ query.all_orphaned.find_in_batches do |vms|
     begin
       orphaned += 1
       unless REPORT_ONLY
-        $log.info "Deleting orphaned VM '#{vm.name}' (id #{vm.id})"
+        $log.info "Deleting Orphaned VM '#{vm.name}' (id #{vm.id})"
         vm.destroy
       end
     rescue => err
@@ -34,7 +32,7 @@ query.all_orphaned.find_in_batches do |vms|
   end
 end
 
-$log.info "Completed purging orphaned VMs. #{REPORT_ONLY ? 'Found' : 'Purged'} #{orphaned} orphaned VMs."
+$log.info "Completed purging Orphaned VMs. #{REPORT_ONLY ? 'Found' : 'Purged'} #{orphaned} Orphaned VMs."
 
 $log.close
 $log = old_logger               
