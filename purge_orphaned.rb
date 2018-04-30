@@ -37,5 +37,4 @@ end
 $log.info "Completed purging orphaned VMs. #{REPORT_ONLY ? 'Found' : 'Purged'} #{orphaned} orphaned VMs."
 
 $log.close
-$log = old_logger
-~                     
+$log = old_logger               
